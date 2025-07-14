@@ -1,14 +1,13 @@
-use std::io::Write;
-use std::path::{Path, PathBuf};
 use std::fs;
 use std::fs::File;
+use std::io::Write;
+use std::path::{Path, PathBuf};
 #[cfg(target_os = "windows")]
 use windows::Win32::Storage::FileSystem;
 
-
 pub fn initialize_repository(path: Box<Path>) -> Result<(), Box<dyn std::error::Error>> {
     if path.exists() {
-        return Err(Box::from("Folder already exists."))
+        return Err(Box::from("Folder already exists."));
     }
     create_hidden_directory(path.clone())?;
     create_directory(path.join("objects").into_boxed_path())?;
@@ -32,10 +31,13 @@ fn create_directory(path: Box<Path>) -> Result<(), Box<dyn std::error::Error>> {
 #[cfg(target_os = "windows")]
 fn make_directory_hidden(path: Box<Path>) -> Result<(), Box<dyn std::error::Error>> {
     unsafe {
-        use windows::{core::PCSTR, Win32::Storage::FileSystem::FILE_ATTRIBUTE_HIDDEN};
+        use windows::{Win32::Storage::FileSystem::FILE_ATTRIBUTE_HIDDEN, core::PCSTR};
         let directory_path: String = String::from(path.to_str().unwrap()) + "\0";
 
-        FileSystem::SetFileAttributesA(PCSTR::from_raw(directory_path.as_ptr()), FILE_ATTRIBUTE_HIDDEN)?;
+        FileSystem::SetFileAttributesA(
+            PCSTR::from_raw(directory_path.as_ptr()),
+            FILE_ATTRIBUTE_HIDDEN,
+        )?;
     }
     Ok(())
 }

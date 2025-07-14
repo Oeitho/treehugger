@@ -1,9 +1,30 @@
 mod command;
+use clap::{Parser, Subcommand};
+
 use crate::command::initialize_repository::initialize_repository;
-use std::{env, path::{Path, PathBuf}};
+use std::path::PathBuf;
+
+#[derive(Parser)]
+#[command(version, about)]
+struct Args {
+    #[command(subcommand)]
+    command: Command,
+}
+
+#[derive(Subcommand)]
+enum Command {
+    #[command(name = "init")]
+    Initialize {
+        #[arg(default_value = ".")]
+        folder: PathBuf,
+    },
+}
 
 fn main() {
-    let result = initialize_repository(get_path());
+    let args = Args::parse();
+    let result = match &args.command {
+        Command::Initialize { folder } => initialize_repository(folder.clone().into_boxed_path()),
+    };
     match result {
         Ok(()) => {
             println!("Repository created");
@@ -12,15 +33,4 @@ fn main() {
             panic!("{}", error);
         }
     };
-}
-
-fn get_path() -> Box<Path> {
-    let args: Vec<String> = env::args().collect();
-    let path = if args.len() > 1 {
-        args[1].clone()
-    } else {
-        ".".to_string()
-    };
-    let path: PathBuf = [path.as_str(), ".git"].iter().collect();
-    path.into_boxed_path()
 }
