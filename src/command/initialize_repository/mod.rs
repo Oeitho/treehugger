@@ -17,16 +17,15 @@ pub fn initialize_repository(path: Box<Path>) -> Result<(), Box<dyn std::error::
     Result::Ok(())
 }
 
-
-fn create_directory(path: Box<Path>) -> Result<(), Box<dyn std::error::Error>> {
-    fs::create_dir(path)?;
+fn create_hidden_directory(path: Box<Path>) -> Result<(), Box<dyn std::error::Error>> {
+    create_directory(path.clone())?;
+    #[cfg(target_os = "windows")]
+    make_directory_hidden(path)?;
     Ok(())
 }
 
-fn create_hidden_directory(path: Box<Path>) -> Result<(), Box<dyn std::error::Error>> {
-    fs::create_dir(path.clone())?;
-    #[cfg(target_os = "windows")]
-    make_directory_hidden(path)?;
+fn create_directory(path: Box<Path>) -> Result<(), Box<dyn std::error::Error>> {
+    fs::create_dir_all(path)?;
     Ok(())
 }
 
