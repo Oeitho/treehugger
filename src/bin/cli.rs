@@ -1,8 +1,7 @@
-mod command;
 use clap::{Parser, Subcommand};
 
-use crate::command::initialize_repository::initialize_repository;
 use std::path::PathBuf;
+use treehugger::command::initialize_repository::initialize_repository;
 
 #[derive(Parser)]
 #[command(version, about)]
