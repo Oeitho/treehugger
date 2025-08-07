@@ -1,6 +1,6 @@
-use std::path::{Path};
 use crate::action::Action;
 use crate::action::Action::{CreateDirectory, CreateFile};
+use std::path::Path;
 
 pub fn initialize_repository(path: Box<Path>) -> Vec<Action> {
     let path = git_folder_path(path);
@@ -19,8 +19,8 @@ pub fn initialize_repository(path: Box<Path>) -> Vec<Action> {
         },
         CreateFile {
             path: path.join("HEAD").into_boxed_path(),
-            content: b"ref: refs/heads/master".to_vec()
-        }
+            content: b"ref: refs/heads/master".to_vec(),
+        },
     ]
 }
 

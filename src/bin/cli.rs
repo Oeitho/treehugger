@@ -1,12 +1,12 @@
+use clap::{Parser, Subcommand};
 use std::fs;
 use std::fs::File;
 use std::io::Write;
-use clap::{Parser, Subcommand};
 
 use std::path::{Path, PathBuf};
-use windows::Win32::Storage::FileSystem;
 use treehugger::action::Action;
 use treehugger::action::initialize_repository::initialize_repository;
+use windows::Win32::Storage::FileSystem;
 
 #[derive(Parser)]
 #[command(version, about)]
@@ -31,8 +31,12 @@ fn main() {
     };
     for action in actions {
         match action {
-            Action::CreateDirectory { path, hidden } => { create_directory(path, hidden).expect("Failed to create directory.") }
-            Action::CreateFile { path, content } => { create_file(path, content).expect("Failed to create file.") }
+            Action::CreateDirectory { path, hidden } => {
+                create_directory(path, hidden).expect("Failed to create directory.")
+            }
+            Action::CreateFile { path, content } => {
+                create_file(path, content).expect("Failed to create file.")
+            }
         }
     }
 }
