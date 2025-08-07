@@ -1,5 +1,8 @@
 # Visual Studio Code
 .vscode
 
+# Jetbrains
+.idea
+
 # Added by cargo
 /target
