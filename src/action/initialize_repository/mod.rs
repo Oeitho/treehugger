@@ -3,6 +3,7 @@ use crate::action::Action;
 use crate::action::Action::{CreateDirectory, CreateFile};
 
 pub fn initialize_repository(path: Box<Path>) -> Vec<Action> {
+    let path = git_folder_path(path);
     vec![
         CreateDirectory {
             path: path.clone(),
@@ -21,4 +22,8 @@ pub fn initialize_repository(path: Box<Path>) -> Vec<Action> {
             content: b"ref: refs/heads/master".to_vec()
         }
     ]
+}
+
+fn git_folder_path(path: Box<Path>) -> Box<Path> {
+    path.join(".git").into_boxed_path()
 }
