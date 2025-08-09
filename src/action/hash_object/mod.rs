@@ -34,10 +34,10 @@ pub fn hash_object(path: Box<Path>, object: Object) -> Vec<Action> {
     let (first, second) = hash.split_at(2);
     let path = path.join(first).into_boxed_path();
 
-    /*actions.push(CreateDirectory {
+    actions.push(CreateDirectory {
         path: path.clone(),
         hidden: false,
-    });*/
+    });
 
     let mut zlib_encoder = ZlibEncoder::new(Vec::new(), Compression::default());
     zlib_encoder
@@ -49,10 +49,10 @@ pub fn hash_object(path: Box<Path>, object: Object) -> Vec<Action> {
 
     println!("File content: [{file_content:?}]");
 
-    /*actions.push(CreateFile {
+    actions.push(CreateFile {
         path: path.join(second).into_boxed_path(),
         content: file_content,
-    });*/
+    });
 
     actions
 }
