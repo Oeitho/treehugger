@@ -5,6 +5,8 @@ use std::io::Write;
 
 use std::path::{Path, PathBuf};
 use treehugger::action::Action;
+use treehugger::action::hash_object::Object::Blob;
+use treehugger::action::hash_object::hash_object;
 use treehugger::action::initialize_repository::initialize_repository;
 use windows::Win32::Storage::FileSystem;
 
@@ -22,20 +24,33 @@ enum Command {
         #[arg(default_value = ".")]
         folder: PathBuf,
     },
+    #[command(name = "hash")]
+    HashObject {
+        #[arg(default_value = ".")]
+        folder: PathBuf,
+    },
 }
 
 fn main() {
     let args = Args::parse();
     let actions = match &args.command {
         Command::Initialize { folder } => initialize_repository(folder.clone().into_boxed_path()),
+        Command::HashObject { folder } => hash_object(
+            folder.clone().into_boxed_path(),
+            Blob {
+                content: b"test\r\n".to_vec(),
+            },
+        ),
     };
     for action in actions {
         match action {
             Action::CreateDirectory { path, hidden } => {
-                create_directory(path, hidden).expect("Failed to create directory.")
+                if !path.exists() {
+                    create_directory(path, hidden).expect("Failed to create directory.");
+                }
             }
             Action::CreateFile { path, content } => {
-                create_file(path, content).expect("Failed to create file.")
+                create_file(path, content).expect("Failed to create file.");
             }
         }
     }

@@ -5,4 +5,5 @@ pub enum Action {
     CreateFile { path: Box<Path>, content: Vec<u8> },
 }
 
+pub mod hash_object;
 pub mod initialize_repository;
