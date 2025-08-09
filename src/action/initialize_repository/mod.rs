@@ -12,7 +12,7 @@ pub fn initialize_repository(path: Box<Path>) -> Vec<Action> {
     actions.extend(objects_directory(path.clone()));
     actions.push(CreateDirectory {
         path: path.join("refs").into_boxed_path(),
-        hidden: true,
+        hidden: false,
     });
     actions.push(CreateFile {
         path: path.join("HEAD").into_boxed_path(),
@@ -27,15 +27,15 @@ fn objects_directory(path: Box<Path>) -> Vec<Action> {
     vec![
         CreateDirectory {
             path: path.clone(),
-            hidden: true,
+            hidden: false,
         },
         CreateDirectory {
             path: path.join("info").into_boxed_path(),
-            hidden: true,
+            hidden: false,
         },
         CreateDirectory {
             path: path.join("pack").into_boxed_path(),
-            hidden: true,
+            hidden: false,
         },
     ]
 }
