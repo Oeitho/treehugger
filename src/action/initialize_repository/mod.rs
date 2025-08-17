@@ -3,7 +3,6 @@ use crate::action::Action::{CreateDirectory, CreateFile};
 use std::path::Path;
 
 pub fn initialize_repository(path: Box<Path>) -> Vec<Action> {
-    let path = path.join(".git").into_boxed_path();
     let mut actions = Vec::new();
     actions.push(CreateDirectory {
         path: path.clone(),
