@@ -27,10 +27,8 @@ impl Object {
 pub fn hash_object(path: Box<Path>, object: Object) -> Vec<Action> {
     let mut actions = Vec::new();
     let content_byte_array = object.content();
-    println!("Content: {content_byte_array:?}");
     let hash = Sha1::digest(content_byte_array.clone());
     let hash = format!("{:x}", hash);
-    println!("Hash: [{hash}]");
     let (first, second) = hash.split_at(2);
     let path = path.join(first).into_boxed_path();
 
@@ -46,8 +44,6 @@ pub fn hash_object(path: Box<Path>, object: Object) -> Vec<Action> {
     let file_content = zlib_encoder
         .finish()
         .expect("Failed to get zlib-encoded file content");
-
-    println!("File content: [{file_content:?}]");
 
     actions.push(CreateFile {
         path: path.join(second).into_boxed_path(),
