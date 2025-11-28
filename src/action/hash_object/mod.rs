@@ -6,18 +6,70 @@ use sha1::{Digest, Sha1};
 use std::io::Write;
 use std::path::Path;
 
+pub struct Entry {
+    entry_type: EntryType,
+    hash: Vec<u8>,
+    name: String,
+}
+
+pub enum EntryType {
+    Blob { mode: FileMode },
+    Tree,
+}
+
+impl EntryType {
+    pub fn to_number(&self) -> Vec<u8> {
+        match self {
+            EntryType::Blob { mode } => mode.to_number(),
+            EntryType::Tree => b"040000".to_vec(),
+        }
+    }
+}
+
+pub enum FileMode {
+    NormalFile,
+    ExecutableFile,
+    SymbolicLink,
+}
+
+impl FileMode {
+    pub fn to_number(&self) -> Vec<u8> {
+        match self {
+            FileMode::NormalFile => b"100644".to_vec(),
+            FileMode::ExecutableFile => b"100755".to_vec(),
+            FileMode::SymbolicLink => b"120000".to_vec(),
+        }
+    }
+}
+
 pub enum Object {
     Blob { content: Vec<u8> },
+    Tree { entries: Vec<Entry> },
 }
 
 impl Object {
+    fn type_as_byte_array(&self) -> Vec<u8> {
+        match self {
+            Object::Blob { .. } => b"blob ".to_vec(),
+            Object::Tree { .. } => b"tree ".to_vec(),
+        }
+    }
+
     fn content(&self) -> Vec<u8> {
         match self {
-            Object::Blob { content } => {
-                let mut result = b"blob ".to_vec();
-                result.extend(format!("{}", content.len()).as_bytes());
-                result.push(0);
-                result.extend(content.clone());
+            Object::Blob { content } => content.clone(),
+            Object::Tree { entries } => {
+                let result: Vec<u8> = entries
+                    .iter()
+                    .flat_map(|entry| {
+                        let mut result = entry.entry_type.to_number();
+                        result.extend(b" ");
+                        result.extend(entry.name.as_bytes());
+                        result.push(0);
+                        result.extend(entry.hash.clone());
+                        result
+                    })
+                    .collect();
                 result
             }
         }
@@ -26,7 +78,7 @@ impl Object {
 
 pub fn hash_object(path: Box<Path>, object: Object) -> Vec<Action> {
     let mut actions = Vec::new();
-    let content_byte_array = object.content();
+    let content_byte_array = create_content_byte_array(object);
     let hash = Sha1::digest(content_byte_array.clone());
     let hash = format!("{:x}", hash);
     let (first, second) = hash.split_at(2);
@@ -51,4 +103,13 @@ pub fn hash_object(path: Box<Path>, object: Object) -> Vec<Action> {
     });
 
     actions
+}
+
+fn create_content_byte_array(object: Object) -> Vec<u8> {
+    let mut result = object.type_as_byte_array();
+    let content = object.content();
+    result.extend(format!("{}", content.len()).as_bytes());
+    result.push(0);
+    result.extend(content.clone());
+    result
 }

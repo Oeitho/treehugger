@@ -34,7 +34,9 @@ enum Command {
 fn main() {
     let args = Args::parse();
     let actions = match &args.command {
-        Command::Initialize { folder } => initialize_repository(folder.join(".git").into_boxed_path()),
+        Command::Initialize { folder } => {
+            initialize_repository(folder.join(".git").into_boxed_path())
+        }
         Command::HashObject { folder } => hash_object(
             folder.clone().into_boxed_path(),
             Blob {
