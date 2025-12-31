@@ -21,13 +21,15 @@ struct Args {
 enum Command {
     #[command(name = "init")]
     Initialize {
-        #[arg(default_value = ".")]
+        #[arg(short, long, default_value = ".")]
         folder: PathBuf,
     },
     #[command(name = "hash")]
     HashObject {
-        #[arg(default_value = ".")]
+        #[arg(short, long, default_value = ".")]
         folder: PathBuf,
+        #[arg()]
+        file: PathBuf
     },
 }
 
@@ -37,10 +39,10 @@ fn main() {
         Command::Initialize { folder } => {
             initialize_repository(folder.join(".git").into_boxed_path())
         }
-        Command::HashObject { folder } => hash_object(
+        Command::HashObject { folder, file } => hash_object(
             folder.clone().into_boxed_path(),
             Blob {
-                content: b"test\r\n".to_vec(),
+                content: read_file(file.clone().into_boxed_path()),
             },
         ),
     };
@@ -56,6 +58,10 @@ fn main() {
             }
         }
     }
+}
+
+fn read_file(path: Box<Path>) -> Vec<u8> {
+    fs::read(path).unwrap()
 }
 
 fn create_directory(path: Box<Path>, hidden: bool) -> Result<(), Box<dyn std::error::Error>> {

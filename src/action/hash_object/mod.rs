@@ -82,7 +82,7 @@ pub fn hash_object(path: Box<Path>, object: Object) -> Vec<Action> {
     let hash = Sha1::digest(content_byte_array.clone());
     let hash = format!("{:x}", hash);
     let (first, second) = hash.split_at(2);
-    let path = path.join(first).into_boxed_path();
+    let path = path.join(".git/objects").join(first).into_boxed_path();
 
     actions.push(CreateDirectory {
         path: path.clone(),
